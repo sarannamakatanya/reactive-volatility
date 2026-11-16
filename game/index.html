@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Alchemist's Debt — Reaction Prototype</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main id="app">
+  <!-- Title / start screen -->
+  <section id="screen-title" class="screen">
+    <h1>The Alchemist&rsquo;s Debt</h1>
+    <p class="tagline">A reaction prototype &mdash; brew potions, fulfil contracts, don&rsquo;t blow up the cauldron.</p>
+    <div class="howto">
+      <h2>How to brew</h2>
+      <ol>
+        <li>Pick 2 or 3 ingredients, <strong>in order</strong>. The first sets the potion&rsquo;s effect, the second its trait, the third its twist. The same ingredients in a different order make a different potion.</li>
+        <li>Set the flame. A hotter flame means a stronger potion &mdash; and a wilder reaction.</li>
+        <li>Choose a catalyst, or none. Wildspark doubles the power and the danger; Stabilizing Salt steadies it.</li>
+        <li>Watch the volatility meter. If the reaction runs away, the brew is lost. Stabilize to cool it down, at the cost of quality.</li>
+        <li>Brew a potion that matches the contract&rsquo;s effect at the contract&rsquo;s quality &mdash; or better &mdash; to fulfil it. Fulfil 3 contracts before your 12 brews run out.</li>
+      </ol>
+    </div>
+    <button id="btn-start" class="big">Begin brewing</button>
+    <p class="note">Prototype: the reaction system and contracts only. No debt, no House, no shop yet.</p>
+  </section>
+
+  <!-- Brewing screen -->
+  <section id="screen-play" class="screen" hidden>
+    <header class="hud">
+      <div class="hud-title">The Alchemist&rsquo;s Debt</div>
+      <div class="hud-stat">Coins <strong id="hud-coins">0</strong></div>
+      <div class="hud-stat">Contracts <strong id="hud-contracts">0 / 3</strong></div>
+      <div class="hud-stat">Brews left <strong id="hud-brews">12</strong></div>
+    </header>
+
+    <div class="play-grid">
+      <div class="col-left">
+        <section class="panel" id="contract-panel">
+          <h2>Contract</h2>
+          <div id="contract-card"></div>
+        </section>
+        <section class="panel" id="cauldron-panel">
+          <h2>Cauldron</h2>
+          <div id="cauldron-slots"></div>
+          <p class="hint">Click an ingredient to add it. Click a filled slot to take it back out. The first ingredient is the base, the second the modifier, the third the finisher.</p>
+        </section>
+        <section class="panel" id="shelf-panel">
+          <h2>Ingredient shelf</h2>
+          <div id="ingredient-shelf"></div>
+        </section>
+      </div>
+      <div class="col-right">
+        <section class="panel" id="flame-panel">
+          <h2>Flame</h2>
+          <div id="temp-buttons" class="btn-row"></div>
+        </section>
+        <section class="panel" id="catalyst-panel">
+          <h2>Catalyst</h2>
+          <div id="catalyst-buttons" class="btn-row"></div>
+        </section>
+        <section class="panel" id="preview-panel">
+          <h2>Reaction preview</h2>
+          <div id="preview"></div>
+          <div class="btn-row">
+            <button id="btn-stabilize" class="btn">Stabilize the cauldron</button>
+            <button id="btn-brew" class="btn primary">Brew!</button>
+          </div>
+        </section>
+        <section class="panel" id="result-panel">
+          <h2>Result</h2>
+          <div id="result"><p class="muted">Nothing brewed yet. The cauldron is waiting.</p></div>
+        </section>
+        <section class="panel" id="log-panel">
+          <h2>Log</h2>
+          <ul id="log"></ul>
+        </section>
+      </div>
+    </div>
+  </section>
+
+  <!-- End screen -->
+  <section id="screen-end" class="screen" hidden>
+    <h1 id="end-title"></h1>
+    <p id="end-text"></p>
+    <p id="end-stats"></p>
+    <button id="btn-restart" class="big">Brew again</button>
+  </section>
+</main>
+<script type="module" src="src/main.js"></script>
+</body>
+</html>

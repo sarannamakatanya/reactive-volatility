@@ -1,0 +1,238 @@
+/* The Alchemist's Debt — reaction prototype.
+   Dark arcane palette: ink-plum background, brass and gold accents,
+   parchment text. Ingredient colours come from data.js and are applied
+   inline, so each ingredient reads as itself. */
+
+:root {
+  --ink: #17102a;
+  --ink-2: #221741;
+  --panel: #251a45;
+  --panel-edge: #3d2d6b;
+  --parchment: #f2e8c9;
+  --muted: #b9aed6;
+  --gold: #e8b64c;
+  --gold-dim: #a67c2e;
+  --green: #7bc47f;
+  --amber: #f0a13c;
+  --red: #e05d5d;
+  --blue: #7fd4ff;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--parchment);
+  font-family: Georgia, 'Times New Roman', serif;
+  line-height: 1.45;
+}
+
+#app { max-width: 1100px; margin: 0 auto; padding: 20px; }
+
+.screen[hidden] { display: none; }
+
+h1 {
+  font-size: 2.4rem;
+  margin: 0.4em 0 0.1em;
+  color: var(--gold);
+  letter-spacing: 0.02em;
+}
+
+h2 {
+  font-size: 1.05rem;
+  margin: 0 0 10px;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.tagline { color: var(--muted); font-style: italic; margin-top: 0; }
+
+.howto {
+  background: var(--panel);
+  border: 1px solid var(--panel-edge);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin: 18px 0;
+}
+.howto ol { margin: 0; padding-left: 22px; }
+.howto li { margin: 8px 0; }
+.howto strong { color: var(--gold); }
+
+.note { color: var(--muted); font-size: 0.9rem; }
+
+/* HUD */
+.hud {
+  display: flex;
+  gap: 18px;
+  align-items: baseline;
+  flex-wrap: wrap;
+  background: var(--ink-2);
+  border: 1px solid var(--panel-edge);
+  border-radius: 10px;
+  padding: 10px 16px;
+  margin-bottom: 16px;
+}
+.hud-title { font-size: 1.25rem; color: var(--gold); font-weight: bold; }
+.hud-stat { color: var(--muted); }
+.hud-stat strong { color: var(--parchment); font-size: 1.15rem; }
+
+/* Two-column brewing layout; stacks on narrow screens. */
+.play-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+@media (max-width: 820px) {
+  .play-grid { grid-template-columns: 1fr; }
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--panel-edge);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+
+.hint, .muted { color: var(--muted); font-size: 0.92rem; }
+
+/* Contract card */
+#contract-card .client { font-size: 1.15rem; font-weight: bold; }
+#contract-card .want { color: var(--muted); font-style: italic; margin: 2px 0 8px; }
+#contract-card .demand { font-size: 1.05rem; }
+#contract-card .demand strong { color: var(--gold); }
+#contract-card .reward { margin-top: 6px; color: var(--green); }
+
+/* Cauldron slots — three positions, in order. */
+#cauldron-slots { display: flex; gap: 10px; }
+.slot {
+  flex: 1;
+  min-height: 86px;
+  border: 2px dashed var(--panel-edge);
+  border-radius: 10px;
+  padding: 8px;
+  text-align: center;
+  cursor: default;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+.slot.filled { border-style: solid; cursor: pointer; }
+.slot.filled:hover { outline: 2px solid var(--gold); }
+.slot .pos {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+.slot .ing-name { font-weight: bold; }
+.slot .ing-el { font-size: 0.85rem; color: var(--muted); }
+.slot .dot {
+  width: 16px; height: 16px; border-radius: 50%;
+  margin: 0 auto;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+/* Ingredient shelf */
+#ingredient-shelf {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.ing-card {
+  background: var(--ink-2);
+  border: 1px solid var(--panel-edge);
+  border-radius: 8px;
+  padding: 10px;
+  cursor: pointer;
+  text-align: left;
+  color: var(--parchment);
+  font-family: inherit;
+}
+.ing-card:hover:not(:disabled) { outline: 2px solid var(--gold); }
+.ing-card:disabled { opacity: 0.45; cursor: default; }
+.ing-card .dot {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  margin-bottom: 6px;
+}
+.ing-card .ing-name { font-weight: bold; display: block; }
+.ing-card .ing-el { color: var(--muted); font-size: 0.85rem; display: block; }
+.ing-card .ing-pot { font-size: 0.85rem; color: var(--gold); display: block; margin-top: 2px; }
+.ing-card .ing-blurb { font-size: 0.82rem; color: var(--muted); display: block; margin-top: 4px; }
+
+/* Buttons */
+.btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn {
+  background: var(--ink-2);
+  color: var(--parchment);
+  border: 1px solid var(--panel-edge);
+  border-radius: 8px;
+  padding: 9px 14px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+.btn:hover:not(:disabled) { border-color: var(--gold); }
+.btn:disabled { opacity: 0.45; cursor: default; }
+.btn.selected {
+  border-color: var(--gold);
+  background: #3a2a12;
+  color: var(--gold);
+}
+.btn.primary {
+  background: var(--gold);
+  color: #241a05;
+  border-color: var(--gold);
+  font-weight: bold;
+}
+.btn.primary:hover:not(:disabled) { background: #f5c86a; }
+.btn.big, .big {
+  background: var(--gold);
+  color: #241a05;
+  border: none;
+  border-radius: 10px;
+  padding: 13px 26px;
+  font-family: inherit;
+  font-size: 1.15rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+.big:hover { background: #f5c86a; }
+.btn-row .btn { flex: 1; }
+#btn-stabilize, #btn-brew { margin-top: 10px; }
+
+/* Preview */
+#preview .potion-name { font-size: 1.3rem; font-weight: bold; color: var(--gold); }
+#preview .line { margin: 4px 0; }
+#preview .line b { color: var(--parchment); }
+#preview .affinity { color: var(--muted); font-style: italic; }
+#preview .match { color: var(--green); font-weight: bold; }
+#preview .nomatch { color: var(--amber); }
+.meter {
+  height: 14px;
+  background: var(--ink);
+  border: 1px solid var(--panel-edge);
+  border-radius: 7px;
+  overflow: hidden;
+  margin: 6px 0 2px;
+}
+.meter > div { height: 100%; }
+.meter-label { font-size: 0.9rem; color: var(--muted); }
+
+/* Result */
+#result .potion-name { font-size: 1.25rem; font-weight: bold; color: var(--gold); }
+#result .good { color: var(--green); font-weight: bold; }
+#result .bad { color: var(--red); font-weight: bold; }
+#result .line { margin: 4px 0; }
+
+/* Log */
+#log { margin: 0; padding-left: 18px; font-size: 0.92rem; color: var(--muted); }
+#log li { margin: 4px 0; }
+
+#end-text { font-size: 1.1rem; }
+#end-stats { color: var(--muted); }
