@@ -1,4 +1,4 @@
-// The Alchemist's Debt — best-game-01 entry program (Node 22, standard library only).
+// Reactive Volatility — best-game-01 entry program (Node 22, standard library only).
 //
 // The game lives in game/ as plain static files a desktop browser loads offline
 // (index.html plus its ES modules and stylesheet; no libraries, no network requests).

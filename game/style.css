@@ -1,4 +1,4 @@
-/* The Alchemist's Debt — reaction prototype.
+/* Reactive Volatility — M2.
    Dark arcane palette: ink-plum background, brass and gold accents,
    parchment text. Ingredient colours come from data.js and are applied
    inline, so each ingredient reads as itself. */
@@ -13,6 +13,8 @@
   --gold: #e8b64c;
   --gold-dim: #a67c2e;
   --green: #7bc47f;
+  --yellow: #e8d44d;
+  --orange: #e07b39;
   --amber: #f0a13c;
   --red: #e05d5d;
   --blue: #7fd4ff;
@@ -77,6 +79,30 @@ h2 {
 .hud-title { font-size: 1.25rem; color: var(--gold); font-weight: bold; }
 .hud-stat { color: var(--muted); }
 .hud-stat strong { color: var(--parchment); font-size: 1.15rem; }
+/* Reserved HUD slot (debt arrives in M4): same position and size as a
+   live stat, shown empty/disabled — never a fake number, and the bar
+   must not reflow when M4 fills it. */
+.hud-reserved { opacity: 0.45; cursor: help; }
+
+/* One-line last-event strip — the whole "log" in M1. */
+.event-strip {
+  color: var(--muted);
+  font-size: 0.95rem;
+  font-style: italic;
+  min-height: 1.4em;
+  margin-bottom: 12px;
+}
+
+/* Key hints on buttons and shelf cards (brief §9). */
+.key-hint {
+  font-size: 0.75rem;
+  color: var(--gold-dim);
+  border: 1px solid var(--panel-edge);
+  border-radius: 4px;
+  padding: 0 4px;
+  margin-left: 4px;
+  white-space: nowrap;
+}
 
 /* Two-column brewing layout; stacks on narrow screens. */
 .play-grid {
@@ -104,6 +130,8 @@ h2 {
 #contract-card .want { color: var(--muted); font-style: italic; margin: 2px 0 8px; }
 #contract-card .demand { font-size: 1.05rem; }
 #contract-card .demand strong { color: var(--gold); }
+#contract-card .demand-aff { margin-top: 6px; font-size: 1.05rem; }
+#contract-card .demand-gems { margin-top: 4px; color: var(--muted); font-size: 0.95rem; }
 #contract-card .reward { margin-top: 6px; color: var(--green); }
 
 /* Cauldron slots — three positions, in order. */
@@ -230,9 +258,27 @@ h2 {
 #result .bad { color: var(--red); font-weight: bold; }
 #result .line { margin: 4px 0; }
 
-/* Log */
-#log { margin: 0; padding-left: 18px; font-size: 0.92rem; color: var(--muted); }
-#log li { margin: 4px 0; }
+/* Tutorial banner (M2) — the current step above the play grid. */
+.tutorial-banner { border-color: var(--gold-dim); }
+.tutorial-banner #tutorial-text { font-size: 1.05rem; }
+.tutorial-banner #tutorial-text strong { color: var(--gold); }
+.tutorial-progress { color: var(--muted); margin: 8px 0; }
+.tutorial-progress div { margin: 2px 0; }
+
+/* Best result on the title screen (M2, stored locally). */
+.best { color: var(--gold); font-size: 1.05rem; }
+.btn.big-btn { padding: 13px 26px; font-size: 1.15rem; }
+
+/* Recipe reference entries (M2). */
+.recipe { padding: 6px 0; border-bottom: 1px solid var(--panel-edge); }
+.recipe:last-child { border-bottom: none; }
+.recipe-name { font-weight: bold; color: var(--gold); display: block; }
+.recipe-meta { color: var(--muted); font-size: 0.92rem; }
+
+/* Preview fulfilment indicator: effect ✓/✗, quality ✓/✗, affinity ★/—. */
+.fulfil-line { margin-top: 8px; font-size: 0.95rem; }
+.fulfil-line .ok { color: var(--green); font-weight: bold; }
+.fulfil-line .no { color: var(--amber); font-weight: bold; }
 
 #end-text { font-size: 1.1rem; }
 #end-stats { color: var(--muted); }

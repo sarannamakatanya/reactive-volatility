@@ -29,7 +29,7 @@ export const RUNAWAY_THRESHOLD = 40;
 // otherwise the strongest brews could always be made perfectly safe, and
 // the push-vs-stabilize choice would vanish.
 export const STABILIZE_VOL_DROP = 25;
-export const STABILIZE_QUALITY_KEEP = 0.92;
+export const STABILIZE_QUALITY_KEEP = 0.85;
 export const MAX_STABILIZATIONS = 1;
 // The actual quality wobbles by this much either way when the brew lands,
 // so a brew is never perfectly predictable.
