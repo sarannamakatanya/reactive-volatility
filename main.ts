@@ -1,22 +1,21 @@
-// Reactive Volatility — best-game-01 entry program (Node 22, standard library only).
+// Reactive Volatility — build program (Node 22, standard library only).
 // The game lives in game/ as plain static files a desktop browser loads offline
 // (index.html plus ES modules and stylesheet; no libraries, no network requests).
-// This program hands it in: it verifies the tree is really this game's (every
+// This program verifies the tree is really this game's (every
 // expected module present, no external reference smuggled in), copies game/ (and
-// screenshots/, when it exists) into the output directory, prints a short build
-// summary, and writes dossier.json, the summary the judge reads.
+// screenshots/, when it exists) into the output directory, and prints a short
+// build summary.
 // Milestone: M4 (debt, borrowing, relic shop) + M3 rework (workshop room,
 // cauldron feedback, contractor popup/live window, dialogue blips), on the M1
 // core, M2 tutorial, M3 pixel art and SFX. It refuses a tree that is not this
 // game rather than copying whatever happens to be lying around.
-// Run: `node main.ts` (outside the grader, MAKEFUN_OUTPUT_DIR=out node main.ts).
+// Run: `node main.ts` (OUTPUT_DIR=out node main.ts to write to a different directory).
 
-import { cpSync, existsSync, lstatSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, lstatSync, mkdirSync, readdirSync, readFileSync } from 'node:fs';
 import { extname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { buildDossier } from './vendor/makefun-game.ts';
 
-// --- This game's own facts (not the kit's) ---------------------------------
+// --- This game's own facts ---------------------------------
 
 const MILESTONE = 'M4';
 const MILESTONE_NAME = 'debt + ingredient costs + borrowing + relic shop + workshop rework';
@@ -42,7 +41,7 @@ const EXPECTED_MODULES = [
   'src/sfx.js',
 ];
 
-// The dossier's text cap (kit gate). Over the cap the dossier truncates sources.
+// The source cap. Over the cap the build warns that sources are over budget.
 const TEXT_CAP_BYTES = 163840;
 
 // Text files the external-reference check reads. Only the in-session
@@ -132,7 +131,7 @@ function checkNoExternalRefs(gameDir) {
 }
 
 // A short build summary on stdout: milestone, module count, sprite counts,
-// source bytes against the dossier cap, and screenshots ready (M4's job).
+// source bytes against the source cap, and screenshots ready (M4's job).
 function countSprites(gameDir) {
   const text = readFileSync(join(gameDir, 'src', 'assets.js'), 'utf8');
   const names = [...text.matchAll(/^    (\w+): \{$/gm)].map((m) => m[1]);
@@ -164,15 +163,15 @@ function printSummary(gameDir, moduleCount, scannedFiles) {
   console.log(`game modules: ${moduleCount} expected, all present (${scannedFiles} text files checked)`);
   const art = countSprites(gameDir);
   console.log(`sprites: ${art.total} in assets.js (workshop ${art.workshop}, portraits ${art.portraits}, cauldron ${art.cauldron})`);
-  console.log(`source total: ${sourceBytes} bytes of the ${TEXT_CAP_BYTES}-byte dossier cap`);
+  console.log(`source total: ${sourceBytes} bytes of the ${TEXT_CAP_BYTES}-byte source cap`);
   if (sourceBytes > TEXT_CAP_BYTES) {
-    console.log('WARNING: source total is over the dossier cap — the dossier will truncate sources');
+    console.log('WARNING: source total is over the source cap');
   }
   console.log(`screenshots: ${shots}`);
 }
 
 const here = fileURLToPath(new URL('.', import.meta.url));
-const out = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
+const out = process.env.OUTPUT_DIR ?? '/output';
 const gameDir = join(here, 'game');
 
 const moduleCount = checkModules(gameDir);
@@ -184,18 +183,3 @@ cpSync(gameDir, join(out, 'game'), { recursive: true });
 if (existsSync(join(here, 'screenshots'))) {
   cpSync(join(here, 'screenshots'), join(out, 'screenshots'), { recursive: true });
 }
-
-// The competition's caps (kit gate): text cap shapes the dossier's byte budget;
-// the rest refuse an entry the scorer would refuse — >4 screenshots or one over
-// 256 KiB, >993 files in game/, >48 MiB of game files, any path over 1000 bytes.
-writeFileSync(
-  join(out, 'dossier.json'),
-  buildDossier(out, {
-    text_max_bytes: TEXT_CAP_BYTES,
-    screenshots: { max: 4, max_bytes: 262144 },
-    game_max_files: 993,
-    game_max_bytes: 50331648,
-    game_path_max_bytes: 1000,
-  }),
-);
-console.log(`dossier.json written to ${join(out, 'dossier.json')}`);

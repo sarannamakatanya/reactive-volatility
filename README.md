@@ -1,12 +1,6 @@
-[![best-game-01](https://make.fun/badge/best-game-01.svg)](https://make.fun/bounty/best-game-01)
-[![rank](https://make.fun/badge/best-game-01/sarannamakatanya/reactive-volatility/rank.svg)](https://make.fun/bounty/best-game-01)
-[![reward](https://make.fun/badge/best-game-01/sarannamakatanya/reactive-volatility/reward.svg)](https://make.fun/bounty/best-game-01)
+# Reactive Volatility
 
-# Reactive Volatility —
-
-A desperate alchemist brews potions for demanding clients. Made for
-the make.fun best-game-01 competition ($1,000, deadline
-Thu 2026-11-19 01:00 WIB).
+A desperate alchemist brews potions for demanding clients.
 
 **Milestone 2** — everything from M1, plus the 5-step playable
 tutorial (§6: order, affinity, flame, catalysts & stabilization,
@@ -67,14 +61,11 @@ goes back to the title. Every key has a visible button with its hint.
 - `game/src/recipes.js` — the discovered-reactions reference (per run).
 - `game/src/storage.js` — local best result + the tutorial-done flag.
 - `game/src/main.js` — entry point.
-- `main.ts` — the entry program: copies `game/` (and `screenshots/`
-  when present) to `/output` and writes `dossier.json`.
-- `vendor/makefun-game.ts` — the kit library, copied unchanged.
+- `main.ts` — the build program: verifies the game tree and copies
+  `game/` (and `screenshots/` when present) to the output directory.
 
 ## Playtest
 
-Serve `game/` and open it in a desktop browser, or run `node serve.ts`
-from the kit starter. Or run the headless check:
-`MAKEFUN_OUTPUT_DIR=out node main.ts` (writes `out/dossier.json`).
-Note: until M4 there are no screenshots, so `main.ts` fails on the
-missing `screenshots/` directory — expected, not a bug.
+Serve `game/` and open it in a desktop browser. Or run the headless
+check: `OUTPUT_DIR=out node main.ts` (verifies the tree and copies it
+to `out/`).
