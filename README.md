@@ -2,7 +2,7 @@
 [![rank](https://make.fun/badge/best-game-01/sarannamakatanya/reactive-volatility/rank.svg)](https://make.fun/bounty/best-game-01)
 [![reward](https://make.fun/badge/best-game-01/sarannamakatanya/reactive-volatility/reward.svg)](https://make.fun/bounty/best-game-01)
 
-# Reactive Volatility — best-game-01 entry
+# Reactive Volatility —
 
 A desperate alchemist brews potions for demanding clients. Made for
 the make.fun best-game-01 competition ($1,000, deadline
