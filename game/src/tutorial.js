@@ -1,18 +1,5 @@
-// tutorial.js — the 5-step playable tutorial (spec §6). Each step is a
-// tiny brew the player performs, not a wall of text. The tutorial runs
-// before the first real contract; its brews are free (they spend no brews
-// and no coins) and are recorded in the recipe book like any other brew.
-//
-// The step logic is pure: recordTutorialBrew takes the tutorial state
-// and one brewed reaction ({ spec, outcome } from brewReaction) and
-// advances the step's progress. The UI (game.js) only renders the
-// current step and its checklist. Runaways brew nothing, so they never
-// count toward a step.
-//
-// Step 5 uses one fixed contract — a Modest Ignition potion at quality
-// 55 from the Brass Merchant — so the lesson (effect must match, quality
-// must meet the tier, reward = minQuality × 2, non-matches sell for
-// quality × 0.5) is the same every time.
+// tutorial.js — the 5-step playable tutorial (spec §6): tiny brews the player
+// performs, not a wall of text. Brews are free; step logic is pure.
 
 import { fulfilsContract } from './contracts.js';
 
@@ -117,13 +104,7 @@ function isStepDone(tut) {
   return stepChecklist(tut).every((item) => item.done);
 }
 
-/**
- * Feed one brewed reaction into the tutorial. brew is
- * { spec, outcome } where spec is the brew spec (ingredients,
- * temperature, catalyst, stabilizations) and outcome is brewReaction's
- * return. Returns { stepCompleted, allCompleted }. A runaway (no potion)
- * never counts toward a step.
- */
+/** Feed one brewed reaction ({ spec, outcome }) into the tutorial. */
 export function recordTutorialBrew(tut, brew) {
   if (tut.completed || tut.skipped) return { stepCompleted: false, allCompleted: false };
   const { spec, outcome } = brew;
@@ -145,8 +126,6 @@ export function recordTutorialBrew(tut, brew) {
     case 2: {
       const pair = ids.slice(0, 2).join('+');
       if (!tut.flame.pair) tut.flame.pair = pair;
-      // Only the pair the step started with counts — a different pair
-      // is a different potion, not progress on this step.
       if (tut.flame.pair === pair) tut.flame[spec.temperature] = true;
       break;
     }

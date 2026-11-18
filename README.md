@@ -1,3 +1,7 @@
+[![best-game-01](https://make.fun/badge/best-game-01.svg)](https://make.fun/bounty/best-game-01)
+[![rank](https://make.fun/badge/best-game-01/sarannamakatanya/reactive-volatility/rank.svg)](https://make.fun/bounty/best-game-01)
+[![reward](https://make.fun/badge/best-game-01/sarannamakatanya/reactive-volatility/reward.svg)](https://make.fun/bounty/best-game-01)
+
 # Reactive Volatility — best-game-01 entry
 
 A desperate alchemist brews potions for demanding clients. Made for
@@ -7,8 +11,7 @@ Thu 2026-11-19 01:00 WIB).
 **Milestone 2** — everything from M1, plus the 5-step playable
 tutorial (§6: order, affinity, flame, catalysts & stabilization,
 contracts), the recipe reference (discovered reactions only), the title
-screen's best result, and a "How to play" screen. There is deliberately
-no pixel art, no debt, no market, no House Rules, and no shop yet.
+screen's best result, and a "How to play" screen.
 
 ## The reaction system
 

@@ -8,8 +8,8 @@
 </head>
 <body>
 <main id="app">
-  <!-- Title / start screen -->
   <section id="screen-title" class="screen">
+    <canvas id="title-cauldron" class="title-cauldron" width="96" height="80"></canvas>
     <h1>Reactive Volatility</h1>
     <p class="tagline">Master the reaction. Survive the consequences.</p>
     <div class="howto">
@@ -19,7 +19,7 @@
         <li>Set the flame. A hotter flame means a stronger potion &mdash; and a wilder reaction.</li>
         <li>Choose a catalyst, or none. Wildspark doubles the power and the danger; Stabilizing Salt steadies it.</li>
         <li>Watch the volatility meter. If the reaction runs away, the brew is lost. Stabilize to cool it down, at the cost of quality.</li>
-        <li>Brew a potion that matches the contract&rsquo;s effect at the contract&rsquo;s quality &mdash; or better &mdash; to fulfil it. Each contract also demands one affinity: match it and earn extra Gems. Fulfil 3 contracts before your 12 brews run out.</li>
+        <li>Brew a potion that matches the contract&rsquo;s effect at the contract&rsquo;s quality &mdash; or better &mdash; to fulfil it. Each contract also demands one affinity: match it and earn extra Gems. Ingredients cost 5 coins each (refunded if you take one out). The Creditor takes 100 coins after each fulfilled contract &mdash; borrow 50 if you must. Fulfil 3 contracts with no debt remaining to win, before your 12 brews run out.</li>
       </ol>
     </div>
     <p id="best-result" class="best"></p>
@@ -27,10 +27,9 @@
       <button id="btn-start" class="big">Begin brewing</button>
       <button id="btn-howto" class="btn big-btn">How to play <span class="key-hint">[H]</span></button>
     </div>
-    <p class="note">Milestone 2 &mdash; the reaction core, contracts, and a 5-step playable tutorial, plus a recipe reference of everything you have brewed. Gems are earned and shown here; the shop that spends them arrives later. No debt yet.</p>
+    <p class="note">Milestone 4 &mdash; debt (300), ingredient costs, borrowing, and the relic shop, on top of the reaction core, contracts, tutorial, pixel art, and sound. Ingredients cost 5 coins each (refunded on removal); the Creditor takes 100 after each contract; borrow 50 when you need it. Win = 3 contracts + zero debt.</p>
   </section>
 
-  <!-- How to play + recipe reference -->
   <section id="screen-howto" class="screen" hidden>
     <h1>How to play</h1>
     <p class="tagline">Five steps, each one a brew you perform — and every reaction you have discovered, written down.</p>
@@ -49,21 +48,42 @@
       <div id="howto-recipes"></div>
       <p class="muted">Only what you have actually brewed appears here. Re-brewing a reaction updates it to the latest quality and volatility.</p>
     </section>
+    <section class="panel">
+      <h2>Glossary — run record</h2>
+      <div id="howto-glossary"></div>
+      <p class="muted">Display only — the Glossary records what you discovered. It pays nothing and changes no numbers.</p>
+    </section>
     <button id="btn-howto-back" class="btn">Back <span class="key-hint">[Esc]</span></button>
   </section>
 
-  <!-- Brewing screen -->
   <section id="screen-play" class="screen" hidden>
+    <img id="backdrop-img" src="assets/workshop-backdrop-centred.webp" alt="">
     <header class="hud">
       <div class="hud-title">Reactive Volatility</div>
-      <div class="hud-stat">Coins <strong id="hud-coins">0</strong></div>
-      <div class="hud-stat">Gems <strong id="hud-gems">0</strong> ◆</div>
-      <div class="hud-stat hud-reserved" title="Debt arrives in a later milestone">Debt <strong id="hud-debt">—</strong></div>
+      <div class="hud-stat"><canvas id="coin-icon" class="hud-icon" width="12" height="12"></canvas>Coins <strong id="hud-coins">0</strong></div>
+      <div class="hud-stat"><canvas id="gem-icon" class="hud-icon" width="12" height="12"></canvas>Gems <strong id="hud-gems">0</strong> ◆</div>
+      <div class="hud-stat" title="Debt owed to the Creditor — 100 coins after each fulfilled contract">Debt <strong id="hud-debt">—</strong></div>
       <div class="hud-stat">Contracts <strong id="hud-contracts">0 / 3</strong></div>
       <div class="hud-stat">Brews left <strong id="hud-brews">12</strong></div>
-      <button id="btn-recipes" class="btn small">Recipes <span class="key-hint">[H]</span></button>
+      <button id="btn-borrow" class="btn small">Borrow 50 coins</button>
+      <button id="btn-mute" class="btn small">Sound: on <span class="key-hint">[M]</span></button>
+      <button id="btn-shop" class="btn small">Shop</button>
+      <button id="btn-recipes" class="btn small">Glossary <span class="key-hint">[H]</span></button>
+      <div id="event-strip" class="event-strip" aria-live="polite"></div>
     </header>
-    <div id="event-strip" class="event-strip" aria-live="polite"></div>
+    <section id="workshop-strip" class="workshop-strip" aria-hidden="true">
+      <canvas id="workshop-canvas" width="240" height="48"></canvas>
+    </section>
+    <section id="contractor-popup" class="panel contractor-popup" hidden>
+      <canvas id="contractor-portrait" class="contractor-portrait" width="28" height="28"></canvas>
+      <img id="contractor-portrait-img" class="portrait-img" src="assets/portrait-brass-merchant.webp" alt="">
+      <div class="contractor-body">
+        <div class="contractor-name" id="contractor-name"></div>
+        <div class="contractor-order" id="contractor-order"></div>
+        <div class="contractor-bubble" id="contractor-bubble"></div>
+      </div>
+      <button id="btn-contractor-minimize" class="btn small">Continue brewing</button>
+    </section>
     <section id="tutorial-banner" class="panel tutorial-banner" hidden>
       <div id="tutorial-text"></div>
       <div id="tutorial-progress" class="tutorial-progress"></div>
@@ -77,19 +97,24 @@
       <div class="col-left">
         <section class="panel" id="contract-panel">
           <h2>Contract</h2>
+          <canvas id="seal-canvas" class="seal" width="16" height="16"></canvas>
           <div id="contract-card"></div>
         </section>
+      </div>
+      <div class="col-centre" id="col-centre">
         <section class="panel" id="cauldron-panel">
           <h2>Cauldron</h2>
+          <div class="cauldron-art" id="cauldron-art">
+            <img id="cauldron-img" src="assets/cauldron-hero.webp" alt="" hidden>
+            <canvas id="cauldron-canvas" width="96" height="80"></canvas>
+          </div>
           <div id="cauldron-slots"></div>
-          <p class="hint">Click an ingredient to add it, or press 1&ndash;6. Click a filled slot (or press Backspace) to take the last one back out. The first ingredient is the base, the second the modifier, the third the finisher.</p>
+          <div class="brew-controls">
+            <button id="btn-brew" class="btn primary brew-hero">Brew! <span class="key-hint">[Space]</span></button>
+            <button id="btn-stabilize" class="btn">Stabilize the cauldron <span class="key-hint">[T]</span></button>
+          </div>
+          <p class="hint" id="brew-hint">Click an ingredient to add it, or press 1&ndash;6. Click a filled slot (or press Backspace) to take the last one back out. The first ingredient is the base, the second the modifier, the third the finisher.</p>
         </section>
-        <section class="panel" id="shelf-panel">
-          <h2>Ingredient shelf</h2>
-          <div id="ingredient-shelf"></div>
-        </section>
-      </div>
-      <div class="col-right">
         <section class="panel" id="flame-panel">
           <h2>Flame</h2>
           <div id="temp-buttons" class="btn-row"></div>
@@ -98,28 +123,65 @@
           <h2>Catalyst</h2>
           <div id="catalyst-buttons" class="btn-row"></div>
         </section>
+      </div>
+      <div class="col-right">
+        <section id="contractor-live" class="panel contractor-live" hidden>
+          <canvas id="contractor-head" class="contractor-head" width="14" height="14"></canvas>
+          <img id="contractor-head-img" class="contractor-head-img" src="assets/portrait-brass-merchant.webp" alt="">
+          <span id="contractor-summary" class="contractor-summary"></span>
+          <span id="contractor-irritation" class="irritation" title="Irritation — cosmetic only, no effect on the game"></span>
+          <span id="contractor-reaction" class="contractor-reaction"></span>
+          <button id="btn-contractor-list" class="btn small">Order</button>
+          <div id="contractor-details" class="contractor-details" hidden></div>
+        </section>
         <section class="panel" id="preview-panel">
           <h2>Reaction preview</h2>
           <div id="preview"></div>
-          <div class="btn-row">
-            <button id="btn-stabilize" class="btn">Stabilize the cauldron</button>
-            <button id="btn-brew" class="btn primary">Brew!</button>
-          </div>
+          <p id="brewing-name" class="brewing-name">No potion brewing</p>
+          <canvas id="meter-canvas" class="meter-strip" width="128" height="16"></canvas>
         </section>
         <section class="panel" id="result-panel">
           <h2>Result</h2>
+          <div id="result-sprite"><canvas id="potion-canvas" width="32" height="32" hidden></canvas></div>
           <div id="result"><p class="muted">Nothing brewed yet. The cauldron is waiting.</p></div>
         </section>
       </div>
     </div>
+
+    <div class="bottom-bar">
+      <section class="panel" id="shelf-panel">
+        <h2>Ingredient shelf</h2>
+        <div id="ingredient-shelf"></div>
+      </section>
+    </div>
+
+    <section id="shop-overlay" class="shop-overlay" hidden>
+      <div class="shop-box panel">
+        <h2>Relic shop</h2>
+        <p id="shop-gems" class="muted"></p>
+        <p class="muted">Relics apply immediately, for the rest of the run. One copy each — bought relics leave the list.</p>
+        <div id="shop-list"></div>
+        <div class="btn-row"><button id="btn-shop-close" class="btn primary">Continue brewing</button></div>
+      </div>
+    </section>
   </section>
 
-  <!-- End screen -->
   <section id="screen-end" class="screen" hidden>
     <h1 id="end-title"></h1>
     <p id="end-text"></p>
     <p id="end-stats"></p>
     <button id="btn-restart" class="big">Brew again</button>
+  </section>
+
+  <section id="payoff-overlay" class="payoff-overlay" hidden>
+    <div class="payoff-box panel">
+      <div class="payoff-stars" id="payoff-stars" aria-hidden="true"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+      <canvas id="payoff-potion" class="payoff-potion" width="64" height="64"></canvas>
+      <div id="payoff-stamp" class="payoff-stamp">FULFILLED</div>
+      <div id="payoff-title" class="payoff-title"></div>
+      <div id="payoff-lines" class="payoff-lines"></div>
+      <div class="btn-row"><button id="btn-payoff-close" class="btn primary big">Continue brewing</button></div>
+    </div>
   </section>
 </main>
 <script type="module" src="src/main.js"></script>

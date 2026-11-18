@@ -1,12 +1,8 @@
 // storage.js — the only place that touches localStorage: the best result
-// (contracts fulfilled / coins, shown on the title screen, spec §10 step 1)
-// and the tutorial-done flag (the tutorial runs by default on the first
-// run and is skipped on later runs, spec §6).
-//
-// localStorage may not exist (Node tests, private browsing) — every
-// access goes through a live lookup of globalThis.localStorage and falls
-// back to an in-memory map, so the game never throws on storage. Tests
-// inject a fake localStorage on globalThis to drive the real path.
+// (contracts/coins, title screen) and the tutorial-done flag. localStorage
+// may not exist (Node tests, private browsing) — every access goes through
+// a live lookup of globalThis.localStorage and falls back to an in-memory
+// map, so the game never throws. Tests inject a fake localStorage.
 
 const memory = new Map();
 
@@ -38,7 +34,6 @@ function write(key, value) {
       s.setItem(key, value);
       return;
     } catch {
-      // fall through to the in-memory map
     }
   }
   memory.set(key, value);
@@ -55,15 +50,11 @@ export function loadBest() {
     const parsed = JSON.parse(raw);
     if (typeof parsed?.contracts === 'number' && typeof parsed?.coins === 'number') return parsed;
   } catch {
-    // corrupted entry — treat as no best result
   }
   return null;
 }
 
-/**
- * Record a finished run's result. The best run is the one with the most
- * contracts fulfilled; ties go to the richer run. Returns the best.
- */
+/** Record a finished run. */
 export function saveBest(contracts, coins) {
   const prev = loadBest();
   const next = !prev || contracts > prev.contracts || (contracts === prev.contracts && coins > prev.coins)

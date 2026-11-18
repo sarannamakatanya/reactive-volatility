@@ -1,15 +1,7 @@
-// recipes.js — the recipe reference. A reference, NOT a spoiler: it lists
-// only reactions the player has actually brewed in this run (spec §6).
-// Each entry is keyed by the reaction itself — effect + trait + twist —
-// and records the affinity, quality, and volatility AS LAST BREWED, so
-// re-brewing the same reaction updates the entry instead of adding one.
-//
-// A reaction is fully identified by effect + trait + twist: each element
-// has exactly one ingredient, so the ingredient order is recoverable
-// from the three parts. Two-ingredient brews have no twist (null).
-//
-// The book is per-run: a new run (newGame) creates a fresh, empty book
-// (A8 — no discovered recipes carried over).
+// recipes.js — the recipe reference. A reference, NOT a spoiler: only
+// reactions actually brewed in this run (spec §6). Each entry is keyed
+// by the reaction (effect + trait + twist) and records affinity, quality,
+// and volatility AS LAST BREWED — re-brewing updates it instead of
 
 /** A reaction's identity: effect element | trait | twist ('' when none). */
 export function recipeKey(potion) {
@@ -20,17 +12,23 @@ export function createRecipeBook() {
   return { order: [], byKey: new Map() };
 }
 
-/**
- * Record a successfully brewed potion. Returns the entry. A repeat brew
- * of a known reaction updates its quality/volatility to the latest brew
- * (and bumps its count) instead of adding a duplicate entry.
- */
+// Rarity (§6, display only) from the personal best — never downgrades. Tiers: Common <60, Uncommon 60–69, Rare 70–84, Epic 85–94, Legendary 95+.
+export function rarityOf(quality) {
+  if (quality >= 95) return 'Legendary';
+  if (quality >= 85) return 'Epic';
+  if (quality >= 70) return 'Rare';
+  if (quality >= 60) return 'Uncommon';
+  return 'Common';
+}
+
+/** Record a brewed potion. */
 export function recordBrew(book, potion) {
   const key = recipeKey(potion);
   const existing = book.byKey.get(key);
   if (existing) {
     existing.quality = potion.quality;
     existing.volatility = potion.volatility;
+    existing.best = Math.max(existing.best, potion.quality);
     existing.count += 1;
     return existing;
   }
@@ -43,6 +41,7 @@ export function recordBrew(book, potion) {
     affinity: potion.affinity,
     quality: potion.quality,
     volatility: potion.volatility,
+    best: potion.quality,
     count: 1,
   };
   book.byKey.set(key, entry);
